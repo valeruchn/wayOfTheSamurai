@@ -1,0 +1,39 @@
+.nav {
+  grid-area: n;
+  background-color: #2476a6;
+}
+
+.item {
+  margin: 10px;
+}
+
+.item a {
+  color: #fff;
+  text-decoration: none;
+  font-family: "Raleway", sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.item a:hover {
+  color: #9aa6a3;
+}
+
+.item a.active {
+  font-weight: bold;
+  color: yellow;
+}
+
+.friendsBar {
+  margin-left: 10px;
+  margin-top: 50px; 
+}
+
+.text {
+  color: #fff;
+  font-family: "Raleway", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+}

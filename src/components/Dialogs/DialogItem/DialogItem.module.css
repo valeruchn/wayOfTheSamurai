@@ -1,0 +1,30 @@
+.dialog {
+}
+
+.avatar {
+  margin-top: 10px;
+  float: left;
+  width: 30%;
+  max-height: 40px;
+  max-width: 40px;
+}
+
+.avatar img {
+  width: 100%;
+  max-height: 40px;
+  max-width: 40px;
+}
+
+
+.login {
+  float: left;
+  margin-top: 10px;
+  padding: 10px;
+  width: 60%;
+}
+
+.login a {
+  text-decoration: none;
+  color: #2476a6;
+}
+

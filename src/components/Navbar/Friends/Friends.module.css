@@ -1,0 +1,27 @@
+.friendsBar {
+    width: 90px;
+    height: 90px;
+    margin: 5px;
+    float: left;
+}
+
+.friendsItem {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #2476a6;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.friendsItem img {
+    width: 55px;
+    height: 55px;
+}
+
+.friendName a {
+  color: #fff;
+  text-decoration: none;
+  font-family: "Raleway", sans-serif;
+  font-size: 14px;
+  padding-left: 5px;
+}

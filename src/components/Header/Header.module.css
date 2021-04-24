@@ -1,0 +1,28 @@
+.header {
+  grid-area: h;
+  height: 40px;
+  background-color: #9aa6a3;
+  position: relative;
+}
+
+.header img {
+  width: 30px;
+}
+
+.logoImg {
+  margin: 5px;
+  width: 100px;
+}
+
+.loginBlock {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+}
+
+.loginBlock a {
+  font-family: "Raleway", sans-serif;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+}
