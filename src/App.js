@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Route } from 'react-router'
+import { Redirect, Route, Switch } from 'react-router'
 import './App.css'
 import Preloader from './components/common/Preloader/Preloader'
 import HeaderContainer from './components/Header/HeaderContainer'
@@ -14,9 +14,6 @@ import { initializeApp } from './redux/appReduser'
 import { HashRouter, BrowserRouter } from 'react-router-dom';
 import store from './redux/reduxStore';
 import { Provider } from 'react-redux';
-// import DialogsContainer from './components/Dialogs/DialogsContainer'
-// import ProfileContainer from './components/Profile/ProfileContainer'
-// import UsersContainer from './components/Users/UsersContainer'
 
 const DialogsContainer = React.lazy(() => import('./components/Dialogs/DialogsContainer'))
 const ProfileContainer = React.lazy(() => import('./components/Profile/ProfileContainer'))
@@ -28,8 +25,14 @@ const App = (props) => {
   const initialized = useSelector(state => state.app.initialized)
   const dispatch = useDispatch()
 
+  const catchAllUnhandledErrors = (PromiseRejectionEvent) => {
+    console.log('Some error occured')
+  }
+
   useEffect(() => {
     dispatch(initializeApp())
+    window.addEventListener('unhandledrejection', catchAllUnhandledErrors)
+    return window.removeEventListener('unhandledrejection', catchAllUnhandledErrors)
   }, [dispatch])
 
   if (!initialized) {
@@ -42,15 +45,20 @@ const App = (props) => {
       <NavbarContainer />
       <div className='app-wrapper-content'>
         <LogoImage />
+
+        <Route exact path='/' render={() => <Redirect to={'/profile'} />} />
+
         <Suspense fallback={<Preloader isFetching={true} />}>
           <Route path='/users' render={() => <UsersContainer />} />
           <Route path='/dialogs' render={() => <DialogsContainer />} />
           <Route path='/profile/:userId?' render={() => <ProfileContainer />} />
         </Suspense>
+
         <Route path='/news' component={News} />
         <Route path='/music' component={Music} />
         <Route path='/settings' component={Settings} />
         <Route path='/login' render={() => <Login />} />
+
       </div>
     </div>
   )

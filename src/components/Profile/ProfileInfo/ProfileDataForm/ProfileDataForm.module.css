@@ -1,0 +1,9 @@
+.infoAboutUser {
+  margin-top: 4px;
+}
+
+.formSummaryError {
+  border: solid red 1px;
+  padding: 5px;
+  color: brown;
+}

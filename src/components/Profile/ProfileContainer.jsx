@@ -2,7 +2,7 @@ import axios from 'axios'
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
-import { getStatus, getUserProfile, updateStatus, savePhoto } from '../../redux/profileReducer'
+import { getStatus, getUserProfile, updateStatus, savePhoto, saveProfile } from '../../redux/profileReducer'
 import Profile from './Profile'
 // import { withAuthRedirect } from '../../hoc/withAuthRedirect'
 import { compose } from 'redux'
@@ -42,6 +42,7 @@ class ProfileContainer extends React.Component {
           status={this.props.status}
           updateStatus={this.props.updateStatus}
           getStatus={this.props.getStatus}
+          saveProfile={this.props.saveProfile}
         />
       </div>
     ) 
@@ -57,7 +58,7 @@ class ProfileContainer extends React.Component {
 })
 
 export default compose(
-  connect(mapStateToProps, { getUserProfile, getStatus, updateStatus, savePhoto }),
+  connect(mapStateToProps, { getUserProfile, getStatus, updateStatus, savePhoto, saveProfile}),
   withRouter, /* Чтобы получить массив,
   содержащий обьект с ид пользователя из адресной строки используем hoc withRouter*/
   // withAuthRedirect /* hoc получение данных о авторизации */
