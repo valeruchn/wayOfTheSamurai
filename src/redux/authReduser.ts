@@ -1,8 +1,10 @@
+import { AppStateType } from './reduxStore';
 import { stopSubmit } from "redux-form"
+import { ThunkAction } from "redux-thunk"
 import { authAPI, securityAPI } from "../api/api"
 
-const SET_USER_DATA: string = 'SET_USER_DATA'
-const SET_CAPTCHA_URL: string = 'SET_CAPTCHA_URL'
+const SET_USER_DATA = 'SET_USER_DATA'
+const SET_CAPTCHA_URL = 'SET_CAPTCHA_URL'
 
 const initialState = {
     id: null as number | null,
@@ -13,8 +15,9 @@ const initialState = {
 }
 
 export type initialStateType = typeof initialState
+type ActionsTypes = setAuthUserDataActionType | setCaptchaURLActionType
 
-const authReduser = (state = initialState, action: any) : initialStateType => {
+const authReduser = (state = initialState, action: ActionsTypes) : initialStateType => {
     switch (action.type) {
         /* благодаря добавлению свойств action в обьект payload мы можем обьединить два кейса */
         case SET_USER_DATA:
@@ -61,7 +64,9 @@ export const setCaptchaURL = (captchaURL: string): setCaptchaURLActionType => ({
     type: SET_CAPTCHA_URL, payload: { captchaURL }
 })
 
-export const isAuthCheck = () => async (dispatch: any) => {
+type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
+
+export const isAuthCheck = (): ThunkType => async (dispatch) => {
     const data = await authAPI.authMe()
     if (data.resultCode === 0 /* Если мы авторизованы на сервере */) {
         let { id, email, login } = data.data /* Деструктурирующее присваивание */
@@ -88,7 +93,7 @@ export const login = (email: string, password: string,
 }
 
 
-export const logout = () => async (dispatch: any) => {
+export const logout = (): ThunkType => async (dispatch) => {
 
     const data = await authAPI.logout()
 
@@ -97,7 +102,7 @@ export const logout = () => async (dispatch: any) => {
     }
 }
 
-export const getCaptchaURL = () => async (dispatch: any) => {
+export const getCaptchaURL = (): ThunkType => async (dispatch) => {
     const response = await securityAPI.getCaptchaURL()
     const captchaURL = response.data.url
     dispatch(setCaptchaURL(captchaURL))

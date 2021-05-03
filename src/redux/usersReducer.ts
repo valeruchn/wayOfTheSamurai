@@ -1,13 +1,16 @@
+import { AppStateType } from './reduxStore';
 import { UserType } from './../types/types';
 import { usersAPI } from "../api/api"
+import { Dispatch } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 
-const FOLLOW: string = 'FOLLOW'
-const UNFOLLOW: string = 'UNFOLLOW'
-const SET_USERS: string = 'SET_USERS'
-const SET_CURRENT_PAGE: string = 'SET_CURRENT_PAGE'
-const SET_TOTAL_USERS_COUNT: string = 'SET_TOTAL_USERS_COUNT'
-const TOGGLE_IS_FETCHING: string = 'TOGGLE_IS_FETCHING'
-const TOGGLE_IS_FOLLOWING_PROGRESS: string = 'TOGGLE_IS_FOLLOWING_PROGRESS'
+const FOLLOW = 'FOLLOW'
+const UNFOLLOW = 'UNFOLLOW'
+const SET_USERS= 'SET_USERS'
+const SET_CURRENT_PAGE = 'SET_CURRENT_PAGE'
+const SET_TOTAL_USERS_COUNT = 'SET_TOTAL_USERS_COUNT'
+const TOGGLE_IS_FETCHING = 'TOGGLE_IS_FETCHING'
+const TOGGLE_IS_FOLLOWING_PROGRESS = 'TOGGLE_IS_FOLLOWING_PROGRESS'
 
 
 const initialState = {
@@ -21,7 +24,8 @@ const initialState = {
 
 type InitialStateType = typeof initialState
 
-const usersReducer = (state = initialState, action: any): InitialStateType => {
+
+const usersReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
 
   switch (action.type) {
 
@@ -85,6 +89,10 @@ const usersReducer = (state = initialState, action: any): InitialStateType => {
       return state
   }
 }
+
+type ActionsTypes = FollowSuccessActionType | UnfollowSuccessActionType | SetUsersActionType | 
+SetUsersActionType | SetCurrentPageActionType | SetTotalUsersCountActionType | ToggleIsFetchingActionType | 
+ToggleIsFollowingProgressActionType
 
 type FollowSuccessActionType = {
   type: typeof FOLLOW
@@ -151,47 +159,44 @@ export const toggleIsFollowingProgress =
   type: TOGGLE_IS_FOLLOWING_PROGRESS, followingInProgress, userId
 })
 
+/* 1. Вариант типизации санки */
+type GetStateType = () => AppStateType
+type DispatchTypeRedux = Dispatch<ActionsTypes>
 
-
-
-export const getUsers = (currentPage: number, pageSize: number) => { /* Функция возвращает другую функцию санку */
-  return (dispatch: any) => {
+export const getUsers = (currentPage: number, pageSize: number) => {
+  return async (dispatch: DispatchTypeRedux, getState: GetStateType) => {
     dispatch(setCurrentPage(currentPage))
     // Получаем данные о пользователях с сервера, передаем в стейт
     dispatch(toggleIsFetching(true)) // Вкл анимация загрузки
-    usersAPI.getUsers(currentPage, pageSize) /* axios запрос с сервера импорттируем из api.js */
-      .then(data => {
-        dispatch(toggleIsFetching(false)) // Выкл анимация загрузки
-        dispatch(setUsers(data.items)) // Передаю пользователей в стейт
-        dispatch(setTotalUsersCount(data.totalCount)) // Устанавливаю общее число пользователей
-      })
+    const data = await usersAPI.getUsers(currentPage, pageSize) /* axios запрос с сервера импорттируем из api.js */
+    dispatch(toggleIsFetching(false)) // Выкл анимация загрузки
+    dispatch(setUsers(data.items)) // Передаю пользователей в стейт
+    dispatch(setTotalUsersCount(data.totalCount)) // Устанавливаю общее число пользователей
+  }
+}
+/* 2. Вариант типизации санки ThunkAction(import type from redux thunk)
+<Return, State, E(параметр который пока не используем), ActionsTypes>*/
+type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
+
+export const unfollow = (userId: number): ThunkType => {
+  return async (dispatch) => {
+    dispatch(toggleIsFollowingProgress(true, userId))
+    const data = usersAPI.unfollowRequest(userId) 
+    if (data.resultCode == 0) {  /* Сервер подтвердил что подписка произошла */
+      dispatch(unfollowSuccess(userId)) /* Диспатчим изменения в стор */
+    }
+    dispatch(toggleIsFollowingProgress(false, userId))  
   }
 }
 
-export const unfollow = (userId: number) => { /* Функция возвращает другую функцию санку */
-  return (dispatch: any) => {
+export const follow = (userId: number): ThunkType => {
+  return async (dispatch) => {
     dispatch(toggleIsFollowingProgress(true, userId))
-    usersAPI.unfollowRequest(userId)
-      .then(data => {
-        if (data.resultCode == 0) {  /* Сервер подтвердил что подписка произошла */
-          dispatch(unfollowSuccess(userId)) /* Диспатчим изменения в стор */
-        }
-        dispatch(toggleIsFollowingProgress(false, userId))
-      })
-  }
-}
-
-export const follow = (userId: number) => { /* Функция возвращает другую функцию санку */
-  return (dispatch: any) => {
-    dispatch(toggleIsFollowingProgress(true, userId))
-    /* Асинхронный запрос */
-    usersAPI.followRequest(userId)
-      .then(data => {
-        if (data.resultCode == 0) {  /* Сервер подтвердил что подписка произошла */
-          dispatch(followSuccess(userId)) /* Диспатчим изменения в стор */
-        }
-        dispatch(toggleIsFollowingProgress(false, userId))
-      })
+    const data = await usersAPI.followRequest(userId)
+    if (data.resultCode == 0) {  /* Сервер подтвердил что подписка произошла */
+      dispatch(followSuccess(userId)) /* Диспатчим изменения в стор */
+    }
+    dispatch(toggleIsFollowingProgress(false, userId))
   }
 }
 

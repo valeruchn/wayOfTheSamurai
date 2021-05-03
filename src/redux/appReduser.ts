@@ -1,3 +1,5 @@
+import { AppStateType } from './reduxStore';
+import { ThunkAction } from "redux-thunk"
 import { isAuthCheck } from "./authReduser"
 
 const INITIALISED_SUCCESS: string = 'INITIALISED_SUCCESS'
@@ -7,7 +9,7 @@ const initialState = {
 }
 
 
-const appReduser = (state = initialState, action: any): typeof initialState => {
+const appReduser = (state = initialState, action: initializedSuccessActionType): typeof initialState => {
     switch (action.type) {
         case INITIALISED_SUCCESS:
             return {
@@ -28,7 +30,9 @@ export const initializedSuccess = (): initializedSuccessActionType => ({
     type: INITIALISED_SUCCESS,
 })
 
-export const initializeApp = () => async (dispatch: any) => {
+type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, initializedSuccessActionType>
+
+export const initializeApp = (): ThunkType => async (dispatch) => {
 
     await dispatch(isAuthCheck())
     /* После проверки авторизации инициализируем приложение */
