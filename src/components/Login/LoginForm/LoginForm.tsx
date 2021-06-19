@@ -1,5 +1,5 @@
-import React from 'react'
-import { Field } from 'redux-form'
+import React, { FC } from 'react'
+import { Field, InjectedFormProps } from 'redux-form'
 import { maxLengthCreator, requiredField } from '../../../utilits/validators/validators'
 import { Element } from '../../common/FormsControls/FormsControls'
 import Classes from './LoginForm.module.css'
@@ -7,7 +7,19 @@ import Classes from './LoginForm.module.css'
 const Input = Element('input')
 const maxlength50 = maxLengthCreator(50)
 
-const LoginForm = ({handleSubmit, error, captchaURL}) => {
+export type LoginFormValuesType = {
+    email: string
+    password: string
+    rememberMe: boolean
+    captcha: string
+}
+
+export interface LoginFormOwnProps {
+    captchaURL: string | null
+}
+
+const LoginForm: FC<InjectedFormProps<LoginFormValuesType, LoginFormOwnProps> & LoginFormOwnProps> = 
+({handleSubmit, error, captchaURL}) => {
     
     return (
         <div>

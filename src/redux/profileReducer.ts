@@ -1,8 +1,9 @@
-import { AppStateType } from './reduxStore';
+import { AppStateType, BaseThunkType } from './reduxStore';
 import { PostsType, ProfileType, PhotosProfileType } from './../types/types';
 import { stopSubmit } from "redux-form"
-import { profileAPI } from "../api/api"
+import { profileAPI } from "../api/profileAPI";
 import { ThunkAction } from 'redux-thunk';
+import { Action } from 'redux';
 
 const ADD_POST = 'ADD-POST'
 const SET_USER_PROFILE = 'SET_USER_PROFILE'
@@ -133,8 +134,8 @@ export const getStatus = (userId: number): ThunkType => async (dispatch) => {
 export const updateStatus = (status: string): ThunkType => async (dispatch) => {
   try {
     const data = await profileAPI.updateStatus(status)
-    if (data.resultcode === 0) {
-      dispatch(setStatus(data))
+    if (data.resultCode === 0) {
+      dispatch(setStatus(status))
     }
   } catch (exception) {
     console.log(exception)
@@ -149,11 +150,16 @@ export const savePhoto = (file: any): ThunkType => async (dispatch) => {
   }
 }
 
-export const saveProfile = (profile: ProfileType) => async (dispatch: any, getState: any) => {
+export const saveProfile = 
+(profile: ProfileType): BaseThunkType<Action> => async (dispatch, getState) => {
   const userId = getState().auth.id
   const response = await profileAPI.saveProfile(profile)
   if (response.data.resultcode === 0) {
-    dispatch(getUserProfile(userId))
+    if (userId !== null) { 
+      dispatch(getUserProfile(userId))
+    } else {
+      throw new Error("userId can't be null")
+    }
   } else /* Если пришла ошибка авторизации выводим ее в форме */ {
     const message = response.data.messages.length > 0 ? response.data.messages[0].split('->') : 'Some error'
     // распарсиваем строку с названием поля соц сети с ошибкой

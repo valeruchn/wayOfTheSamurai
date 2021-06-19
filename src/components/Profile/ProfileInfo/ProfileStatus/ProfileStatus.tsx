@@ -29,7 +29,7 @@ const ProfileStatus: FC<PropsType> = (props) => {
     const deactivateEditMode = () => {
         setLocalStateEditMode(false)
         props.updateStatus(localStateStatus)
-        .then(() => {props.getStatus(userId)})
+        // .then(() => {props.getStatus(userId)})
     }
 
     const handleFocus = (event: any) => {

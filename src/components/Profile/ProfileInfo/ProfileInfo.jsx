@@ -16,13 +16,11 @@ const ProfileInfo = (props) => {
     const dispatch = useDispatch()
     const userId = useSelector(state => state.auth.id)
 
-    const onSubmit = (formData) => {
-        props.saveProfile(formData)
-        .then(() => {
-            setEditMode(false)
-            dispatch(getUserProfile(userId))
-        })
-        
+    const onSubmit = async (formData) => {
+        // ошибка redux form
+        await props.saveProfile(formData)
+        setEditMode(false)
+        dispatch(getUserProfile(userId))
     }
     
     const onMainPhotoSelected = (e) => {

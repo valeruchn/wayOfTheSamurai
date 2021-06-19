@@ -1,6 +1,7 @@
 import React from 'react'
 import Classes from './FormControls.module.css'
 
+
 /* HOC для отрисовки форм с подключенными css стилями при валидации ошибок */
 export const Element = Element => ({ input, meta, ...props }) => {
     /* деструктурирующий оператор, ...props будет содержать все, кроме input и meta */
